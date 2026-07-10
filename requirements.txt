@@ -1,6 +1,6 @@
 fastapi==0.103.1
 uvicorn==0.23.2
 pydantic==2.3.0
-pyswisseph==2.10.3.2
+pyswisseph
 python-dotenv==1.0.0
 google-generativeai
