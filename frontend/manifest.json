@@ -1,0 +1,21 @@
+{
+  "name": "Mistik Asistan",
+  "short_name": "Mistik",
+  "description": "Profesyonel Astroloji, Matris ve Fal Asistanı",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/10773/10773665.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/10773/10773665.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

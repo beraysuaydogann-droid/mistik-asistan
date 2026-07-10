@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bera | Fal ve Astroloji Asistanı</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a0a">
+    
+    <!-- Service Worker Kaydı -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('SW registered: ', registration);
+          }).catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+        });
+      }
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="logo2.jpg" alt="Bera Logo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);">
+                <h2>Bera</h2>
+                <span style="display:block; font-size:0.9rem; color:var(--text-secondary); margin-top:0.2rem; font-family: 'Inter', sans-serif;">Rehber Asistan</span>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-target="dashboard"><i data-lucide="layout-dashboard"></i> Dashboard</button>
+                <button class="nav-btn" data-target="astroloji"><i data-lucide="moon-star"></i> Astroloji</button>
+                <button class="nav-btn" data-target="numeroloji"><i data-lucide="calculator"></i> Matris & Yıldızname</button>
+                <button class="nav-btn" data-target="sinastri"><i data-lucide="heart-handshake"></i> İlişki Uyumu</button>
+                <button class="nav-btn" data-target="falcilik"><i data-lucide="sparkles"></i> Fal & Kart Okuma</button>
+                <button class="nav-btn" data-target="ayarlar"><i data-lucide="settings"></i> Ayarlar</button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <h2 style="margin: 0; font-size: 1.5rem;">Bera</h2>
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menüyü Aç">
+                    <img src="logo2.jpg" alt="Menü" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 10px rgba(102, 252, 241, 0.4); border: 1px solid var(--text-accent);">
+                </button>
+            </div>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="page-section active">
+                <header>
+                    <h1>Hoş Geldin, Bera</h1>
+                    <p>Bugün evren bize hangi sırları fısıldıyor?</p>
+                </header>
+                <div class="cards-grid">
+                    <div class="glass-card summary-card" onclick="switchTab('astroloji')">
+                        <i data-lucide="moon-star" class="icon-large"></i>
+                        <h3>Doğum Haritası Analizi</h3>
+                        <p>Detaylı gezegen ve ev analizleri ile müşterine rehberlik et.</p>
+                    </div>
+                    <div class="glass-card summary-card" onclick="switchTab('numeroloji')">
+                        <i data-lucide="star" class="icon-large"></i>
+                        <h3>Kader Matrisi & Yıldızname</h3>
+                        <p>Karmik kodları ve Yıldızname ebced hesaplarını görüntüle.</p>
+                    </div>
+                    <div class="glass-card summary-card" onclick="switchTab('falcilik')">
+                        <i data-lucide="coffee" class="icon-large"></i>
+                        <h3>Fal Asistanı</h3>
+                        <p>Kahve falı, Tarot, Katina ve diğer okumalar için derin AI yorumları al.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Astroloji Section -->
+            <section id="astroloji" class="page-section">
+                <header>
+                    <h1>Doğum Haritası Çıkar</h1>
+                    <p>Müşterinizin gezegen yerleşimlerini hesaplayın.</p>
+                </header>
+                <div class="form-container glass-card">
+                    <form id="astroloji-form">
+                        <div class="input-group">
+                            <input type="number" id="astro-year" placeholder="Yıl (Örn: 1995)" required>
+                            <input type="number" id="astro-month" placeholder="Ay (1-12)" required>
+                            <input type="number" id="astro-day" placeholder="Gün (1-31)" required>
+                            <input type="time" id="astro-time" required>
+                            <input type="text" id="astro-location" placeholder="Doğum Yeri (Örn: Kadıköy, İstanbul, Türkiye)" style="grid-column: span 2;" required>
+                        </div>
+                        <button type="submit" class="primary-btn">Haritayı Hesapla</button>
+                    </form>
+                    <div id="astro-result" class="result-area hidden"></div>
+                </div>
+            </section>
+
+            <!-- Sinastri Section -->
+            <section id="sinastri" class="page-section">
+                <header>
+                    <h1>İlişki Uyumu (Sinastri)</h1>
+                    <p>İki kişinin gezegenleri arasındaki astrolojik uyumu detaylıca analiz edin.</p>
+                </header>
+                <div class="form-container glass-card" style="max-width: 900px;">
+                    <form id="sinastri-form">
+                        <div class="grid-2col" style="gap: 2rem;">
+                            <!-- Kisi 1 -->
+                            <div>
+                                <h3 style="margin-bottom: 1rem; color: var(--accent-1); font-size:1.1rem;">1. Kişi (Müşteri)</h3>
+                                <div class="input-group">
+                                    <input type="number" id="s1-year" placeholder="Yıl (Örn: 1995)" required>
+                                    <input type="number" id="s1-month" placeholder="Ay (1-12)" required>
+                                    <input type="number" id="s1-day" placeholder="Gün (1-31)" required>
+                                    <input type="time" id="s1-time" required>
+                                    <input type="text" id="s1-location" placeholder="Doğum Yeri (Örn: İstanbul, Türkiye)" style="grid-column: span 2;" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Kisi 2 -->
+                            <div>
+                                <h3 style="margin-bottom: 1rem; color: var(--accent-1); font-size:1.1rem;">2. Kişi (Partner)</h3>
+                                <div class="input-group">
+                                    <input type="number" id="s2-year" placeholder="Yıl (Örn: 1990)" required>
+                                    <input type="number" id="s2-month" placeholder="Ay (1-12)" required>
+                                    <input type="number" id="s2-day" placeholder="Gün (1-31)" required>
+                                    <input type="time" id="s2-time" required>
+                                    <input type="text" id="s2-location" placeholder="Doğum Yeri (Örn: İzmir, Türkiye)" style="grid-column: span 2;" required>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="primary-btn" style="margin-top: 1.5rem;">Uyum Haritasını Çıkar</button>
+                    </form>
+                    <div id="sinastri-result" class="result-area hidden"></div>
+                </div>
+            </section>
+
+            <!-- Numeroloji Section -->
+            <section id="numeroloji" class="page-section">
+                <header>
+                    <h1>Kader Matrisi & Yıldızname</h1>
+                    <p>Sayıların ve harflerin gizemli rehberliği.</p>
+                </header>
+                <div class="grid-2col">
+                    <div class="form-container glass-card">
+                        <h3>Yıldızname (Ebced) Hesabı</h3>
+                        <form id="yildizname-form">
+                            <input type="text" id="y-kisi" placeholder="Kişi İsmi" required>
+                            <input type="text" id="y-anne" placeholder="Anne İsmi" required>
+                            <input type="text" id="y-tarih" placeholder="Doğum Tarihi" required>
+                            <button type="submit" class="primary-btn">Hesapla</button>
+                        </form>
+                        <div id="yildizname-result" class="result-area hidden"></div>
+                    </div>
+                    
+                    <div class="form-container glass-card">
+                        <h3>Kader Matrisi (22 Arkana)</h3>
+                        <form id="matris-form">
+                            <input type="text" id="m-tarih" placeholder="Doğum Tarihi (GG.AA.YYYY)" required>
+                            <button type="submit" class="primary-btn">Çıkar</button>
+                        </form>
+                        <div id="matris-result" class="result-area hidden"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fal Section -->
+            <section id="falcilik" class="page-section">
+                <header>
+                    <h1>Fal ve Kart Asistanı</h1>
+                    <p>Yapay Zeka destekli derin yorumlar üretin.</p>
+                </header>
+                <div class="form-container glass-card">
+                    <form id="fal-form">
+                        <div class="grid-2col" style="gap: 1rem;">
+                            <select id="fal-deste" required>
+                                <option value="">Deste Seçiniz...</option>
+                                <option value="Katina Aşk Falı">Katina Aşk Falı (68 Kart)</option>
+                                <option value="Klasik Tarot">Klasik Tarot (78 Kart)</option>
+                                <option value="Çingene Tarotu">Çingene Tarotu (78 Kart)</option>
+                                <option value="Moonology">Moonology Ay Kehanetleri (44 Kart)</option>
+                                <option value="Kalbin Bağlantıları">Kalbin Bağlantıları (90 Kart)</option>
+                                <option value="İskambil Falı">İskambil Kartları</option>
+                                <option value="Geçmiş Yaşam Kartları">Geçmiş Yaşam Kartları</option>
+                                <option value="Kahve Falı">Kahve Falı (Fincan Yorumu)</option>
+                            </select>
+                            <select id="fal-acilim" required>
+                                <option value="">Önce Deste Seçiniz...</option>
+                            </select>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <label for="fal-image" style="color: var(--text-secondary); font-size:0.9rem;">Görsel Ekle (Fincan, Tarot Kartları vb.) - İsteğe Bağlı</label>
+                            <input type="file" id="fal-image" accept="image/*" style="padding:0.5rem;">
+                        </div>
+                        <textarea id="fal-bilgi" rows="5" placeholder="Çıkan kartları, sembolleri veya müşterinin sorusunu/durumunu detaylıca yazın..." required></textarea>
+                        <button type="submit" class="primary-btn">Asistandan Yorum Al <i data-lucide="sparkles"></i></button>
+                    </form>
+                    <div id="fal-result" class="result-area hidden">
+                        <div class="loader hidden" id="fal-loader">Yıldızlar fısıldıyor...</div>
+                        <div id="fal-text"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ayarlar Section -->
+            <section id="ayarlar" class="page-section">
+                <header>
+                    <h1>Ayarlar</h1>
+                    <p>Sistem yapılandırması.</p>
+                </header>
+                <div class="form-container glass-card">
+                    <p>API Anahtarları şu an arka plandaki .env dosyasından okunuyor. Backend'i çalıştırdığınız terminalde Gemini API Key'in tanımlı olduğundan emin olun.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+        
+        // Mobile Sidebar Toggle
+        const sidebar = document.getElementById('sidebar');
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        
+        if (mobileBtn && sidebar) {
+            mobileBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+            
+            // Dışarıya tıklayınca menüyü kapat
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !mobileBtn.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
