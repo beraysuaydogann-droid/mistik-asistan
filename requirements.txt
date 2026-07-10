@@ -3,4 +3,4 @@ uvicorn==0.23.2
 pydantic==2.3.0
 pyswisseph
 python-dotenv==1.0.0
-google-generativeai
+google-genai
